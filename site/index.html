@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BogniGuard</title>
+<meta name="description" content="See how BogniGuard hides a protective pattern in a photo so Stable Diffusion forgeries give themselves away. Open source, built on PhotoGuard.">
+<meta property="og:title" content="BogniGuard">
+<meta property="og:description" content="Pull a real AI forgery apart with your scroll, and see how an invisible-to-the-model shield breaks it.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/jakarta.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="bar" id="bar" aria-hidden="true"></div>
+
+<header>
+  <a class="brand" href="#top" aria-label="BogniGuard, back to top"><img src="img/guard-mark.svg" alt="" width="30" height="30"><span>bogni<b>guard</b></span></a>
+  <a class="source" href="https://github.com/bharathkumar-496/BogniGuard" rel="noopener"><svg class="gh" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+</header>
+
+<main id="top">
+  <section class="act hero" data-state="hero">
+    <div class="copy">
+      <p class="kicker">Open source. Runs on your own machine.</p>
+      <h1>What if a fake could give itself away?</h1>
+      <p class="lede">AI can rewrite a photo of you in under a minute. BogniGuard hides a faint pattern in the image, so when Stable Diffusion tries, the forgery shows its seams.</p>
+      <a class="cta" href="https://github.com/bharathkumar-496/BogniGuard" rel="noopener"><svg class="gh" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg><span>View the code on GitHub</span><i aria-hidden="true">→</i></a>
+    </div>
+  </section>
+
+  <section class="act left" data-state="numbers">
+    <div class="copy">
+      <h2>To AI, you are not a face.</h2>
+      <p>You are <strong>786,432 numbers</strong>. Red, green and blue for each of the 262,144 pixels in a 512 × 512 image. This is the photo as a model receives it, each point lifted by its brightness.</p>
+    </div>
+    <img class="fallback" src="img/sample.jpg" alt="The sample photo: an AI-generated woman in a green jacket on a park bench" loading="lazy">
+  </section>
+
+  <section class="act right" data-state="latent">
+    <div class="copy">
+      <h2>First, it crushes you down.</h2>
+      <p>Stable Diffusion's encoder squeezes those numbers into a small summary called a latent: <strong>4 × 64 × 64</strong>, about 48 times smaller. Every edit it makes starts from this summary, not from your pixels.</p>
+    </div>
+  </section>
+
+  <section class="act left" data-state="edit">
+    <div class="copy">
+      <h2>Then it rewrites the scene.</h2>
+      <p>Ask for "a person standing in a prison cell" and it repaints everything around her. On an unprotected photo the new pixels blend in. Nothing marks where the real image ends.</p>
+    </div>
+    <img class="fallback" src="img/proof-original.jpg" alt="AI edit of the unprotected photo, which blends in" loading="lazy">
+  </section>
+
+  <section class="act right tall" data-state="shield">
+    <div class="copy">
+      <h2>So we poison what it reads.</h2>
+      <p>BogniGuard nudges every pixel by a tiny amount, chosen by the model's own maths. Largest change: <strong>15 out of 255</strong>. Up close you can see a faint texture, but it is far stronger to the model than to you.</p>
+      <div class="amp">
+        <label for="amp"><span>Amplify the real pattern</span><output id="ampOut">×1, what you actually get</output></label>
+        <input type="range" id="amp" min="1" max="10" step=".1" value="1">
+      </div>
+    </div>
+    <img class="fallback" src="img/sample-pattern.png" alt="The protective pattern, amplified so it can be seen" loading="lazy">
+  </section>
+
+  <section class="act left" data-state="drift">
+    <div class="copy">
+      <h2>The summary drifts to nothing.</h2>
+      <p>Over 200 small steps, the pattern pushes that latent toward the summary of a blank gray image. The photo still looks like you. The model is now reading something else.</p>
+    </div>
+  </section>
+
+  <section class="act right" data-state="fakeA">
+    <div class="copy">
+      <h2>Now run the same forgery.</h2>
+      <p>Same photo, same prompt, same random seed. Only the shield is new.</p>
+    </div>
+    <img class="fallback" src="img/proof-protected.jpg" alt="AI edit of the protected photo, with a hard seam around the protected oval" loading="lazy">
+  </section>
+
+  <section class="act peak" data-state="fakeB">
+    <div class="copy">
+      <h2>It can't hide the seam.</h2>
+      <p>The model could not read the protected area, so what it painted never joined up with it. This is a real output from the attack test, not an illustration.</p>
+    </div>
+  </section>
+
+  <section class="act limits" data-state="sober">
+    <div class="copy wide">
+      <h2>It raises the cost. It isn't a guarantee.</h2>
+      <ul>
+        <li><b>You can see it up close.</b> The pattern shows as a faint, scaly texture, most of all on skin and fabric.</li>
+        <li><b>It targets one family of models.</b> Stable Diffusion 1.x. Other AI editors may not be affected at all.</li>
+        <li><b>The pattern can be removed.</b> Compression, resizing or deliberate cleanup can weaken it.</li>
+        <li><b>This was tested lightly.</b> A clear seam on one sample photo across four prompts, using painted-area protection at Balanced strength.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="act close" data-state="close">
+    <div class="copy">
+      <h2>The code is open. Run it yourself.</h2>
+      <p>BogniGuard runs locally, so your photos never leave your machine. You will need Python and a GPU, or plenty of patience on a CPU. The first run downloads the model, about 2.1 GB.</p>
+      <pre tabindex="0"><code>git clone https://github.com/bharathkumar-496/BogniGuard
+cd BogniGuard
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements-app.txt
+.venv/bin/python run.py</code></pre>
+      <a class="cta big" href="https://github.com/bharathkumar-496/BogniGuard" rel="noopener"><svg class="gh" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg><span>Get the code on GitHub</span><i aria-hidden="true">→</i></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <a class="credit" href="https://bognitive.com" rel="noopener">A <img src="img/bognitive-on-dark.svg" alt="Bognitive" height="22"> product</a>
+  <p>Built on <a href="https://github.com/MadryLab/photoguard" rel="noopener">PhotoGuard</a> by Salman, Khaddaj, Leclerc, Ilyas &amp; Madry (MIT License). <a href="https://arxiv.org/abs/2302.06588" rel="noopener">Read the paper</a>. The woman shown is AI-generated, not a real person.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BogniGuard</title>
+<meta name="description" content="Add a faint protective pattern to your photos, so Stable Diffusion edits come out looking fake. Runs entirely on your own computer.">
+<link rel="icon" href="brand/favicon.svg?v=6" type="image/svg+xml">
+<link rel="preload" href="fonts/jakarta.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=7">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body data-view="landing">
+
+<!-- Opening logo sting -->
+<div class="sting" id="sting" aria-hidden="true">
+  <i class="sting-blob"></i>
+  <svg data-mark class="sting-mark"></svg>
+  <div class="sting-word">bogni<span>guard</span></div>
+</div>
+
+<div class="wipe" id="wipe" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<canvas id="field" aria-hidden="true"></canvas>
+
+<header class="top">
+  <a class="brand" href="/" aria-label="BogniGuard home">
+    <svg data-mark class="brand-mark" aria-hidden="true"></svg>
+    <span class="brand-word" aria-hidden="true">bogni<span>guard</span></span>
+  </a>
+  <div class="device" id="device"><i></i><span>Connecting…</span></div>
+</header>
+
+<main>
+  <!-- LANDING -->
+  <section class="hero" id="hero">
+    <div class="hero-copy">
+      <p class="eyebrow e-in" data-public-text="Free to try. Photos are deleted automatically.">Runs on your computer. Nothing is uploaded.</p>
+      <h1 id="headline">Make AI edits of your photos look <em>fake.</em></h1>
+      <p class="lede e-in" style="--d:.5s">BogniGuard weaves a faint pattern into your image that throws off Stable&nbsp;Diffusion, so a forged edit gives itself away.</p>
+
+      <label class="drop e-in spot" id="drop" tabindex="0" style="--d:.65s">
+        <input type="file" id="file" accept="image/*" hidden>
+        <svg data-mark class="drop-mark" aria-hidden="true"></svg>
+        <span class="drop-text">
+          <strong>Drop a photo here</strong>
+          <span id="dropHint">or click to choose. JPG, PNG or WebP, up to 25&nbsp;MB</span>
+        </span>
+      </label>
+      <button class="link e-in" id="sample" type="button" style="--d:.8s">No photo handy? Try the sample <span aria-hidden="true">→</span></button>
+    </div>
+
+    <div class="hero-side e-in" style="--d:.35s">
+      <svg data-mark class="ghost-mark" aria-hidden="true"></svg>
+      <figure class="hero-demo" id="heroDemo" aria-label="A sample photo beside the protective pattern BogniGuard computed for it">
+        <img src="sample.jpg" alt="" class="hd-base">
+        <div class="hd-layer"><img src="sample-pattern.png" alt=""></div>
+        <div class="hd-bar" aria-hidden="true"></div>
+        <figcaption><span>Your photo</span><span class="accent">The shield, amplified</span></figcaption>
+      </figure>
+      <span class="chip c1" aria-hidden="true">200 steps</span>
+      <span class="chip c2" aria-hidden="true">Stable Diffusion 1.x</span>
+      <span class="chip c3" aria-hidden="true" data-public-text="Auto-deleted">100% local</span>
+    </div>
+  </section>
+
+  <!-- STUDIO -->
+  <section class="studio" id="studio" hidden>
+    <ol class="steps" id="steps">
+      <li data-s="compose">Set up</li>
+      <li data-s="forge">Shield</li>
+      <li data-s="result">Result</li>
+    </ol>
+
+    <!-- 1. Compose -->
+    <div class="panel-grid" data-panel="compose">
+      <div class="stage" id="stage">
+        <canvas id="photo" width="512" height="512"></canvas>
+        <canvas id="paint" width="512" height="512"></canvas>
+        <div class="brush-cursor" id="brushCursor" aria-hidden="true"></div>
+        <p class="stage-note" id="stageNote">We started you with an oval. Paint over anything else that matters</p>
+      </div>
+      <div class="controls">
+        <h2>Choose your shield</h2>
+        <p class="sub">Photos are center-cropped to 512 × 512, the size this model works at.</p>
+
+        <fieldset>
+          <legend>Coverage</legend>
+          <div class="seg">
+            <label><input type="radio" name="mode" value="area" checked><span>Painted area</span></label>
+            <label><input type="radio" name="mode" value="whole"><span>Whole photo</span></label>
+          </div>
+          <p class="hint" id="modeHint"></p>
+          <div class="brush-row" id="brushRow">
+            <label for="brush">Brush</label>
+            <input type="range" id="brush" min="10" max="110" value="44">
+            <button class="ghost small" id="clearPaint" type="button">Clear</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Strength</legend>
+          <div class="cards">
+            <label class="card spot"><input type="radio" name="strength" value="light"><span><b>Light</b><em>Faintest, partial protection</em></span></label>
+            <label class="card spot"><input type="radio" name="strength" value="balanced" checked><span><b>Balanced</b><em>Paper's setting, faint texture</em></span></label>
+            <label class="card spot"><input type="radio" name="strength" value="maximum"><span><b>Maximum</b><em>Heavier texture</em></span></label>
+          </div>
+        </fieldset>
+
+        <label class="consent" id="consentRow" hidden><input type="checkbox" id="consent"><span>I own this photo or have permission to use it, and I agree to the <a href="privacy.html" target="_blank" rel="noopener">privacy and fair use terms</a>.</span></label>
+
+        <div class="actions">
+          <button class="primary" id="forge" type="button"><span>Forge shield</span></button>
+          <button class="ghost" id="restart" type="button">Change photo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Forge -->
+    <div class="panel-grid" data-panel="forge" hidden>
+      <div class="stage forging" id="forgeStage">
+        <img id="forgeBase" alt="Your photo while it is being protected">
+        <img id="forgeNoise" alt="" hidden>
+        <div class="scan" aria-hidden="true"></div>
+        <span class="c-tag left">Live preview, pattern amplified</span>
+      </div>
+      <div class="controls" aria-live="polite">
+        <svg data-mark class="forge-mark" id="forgeMark" aria-hidden="true"></svg>
+        <h2 id="forgeTitle">Waking the model…</h2>
+        <p class="sub" id="forgeSub">The first run loads about 2 GB into memory.</p>
+        <div class="meter" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><i></i></div>
+        <div class="readout">
+          <div><span>Step</span><b id="rIter">0 / 0</b></div>
+          <div><span>Time left</span><b id="rEta">–</b></div>
+        </div>
+        <div class="spark-wrap">
+          <span>Distance from a blank gray image, as the model sees it</span>
+          <svg id="spark" viewBox="0 0 320 96" preserveAspectRatio="none" aria-hidden="true"><path id="sparkPath"/></svg>
+        </div>
+        <button class="ghost" id="cancelForge" type="button">Cancel</button>
+      </div>
+    </div>
+
+    <!-- 3. Result -->
+    <div data-panel="result" id="resultPanel" hidden>
+      <div class="panel-grid">
+        <div>
+          <div class="stage compare" id="compare">
+            <img id="cProtected" alt="Protected photo">
+            <div class="c-top" id="cTop"><img id="cOriginal" alt="Original photo"></div>
+            <div class="c-line" id="cLine" aria-hidden="true"><i></i></div>
+            <span class="c-tag left">Original</span><span class="c-tag right">Protected</span>
+            <input type="range" id="cRange" min="0" max="100" value="50" aria-label="Compare original and protected photo">
+          </div>
+          <div class="seg view-seg">
+            <label><input type="radio" name="view" value="compare" checked><span>Compare</span></label>
+            <label><input type="radio" name="view" value="pattern"><span>See the pattern</span></label>
+          </div>
+        </div>
+        <div class="controls">
+          <h2 class="shielded">Shield forged</h2>
+          <p class="sub" id="resultSub"></p>
+          <div class="tiles">
+            <div class="spot"><b id="sPsnr">–</b><span>PSNR (dB), higher is closer to the original</span></div>
+            <div class="spot"><b id="sMax">–</b><span>Largest pixel change, out of 255</span></div>
+            <div class="spot"><b id="sShift">–</b><span>Pull toward blank gray in the model's view</span></div>
+            <div class="spot"><b id="sTime">–</b><span id="sDevice">Seconds</span></div>
+          </div>
+          <div class="actions">
+            <a class="primary" id="download" download="bogniguard-protected.png"><span>Download PNG</span></a>
+            <button class="ghost" id="again" type="button">New photo</button>
+          </div>
+          <p class="warn"><b id="warnLead">Keep it as a PNG.</b> Resizing, JPEG compression and screenshots can weaken the pattern, and most social apps do all of these.</p>
+        </div>
+      </div>
+
+      <div class="attack">
+        <div class="attack-head">
+          <div>
+            <p class="eyebrow violet">Attack test</p>
+            <h2>Now try to fake it</h2>
+            <p class="sub" id="attackSub"></p>
+          </div>
+          <form id="attackForm" class="attack-form">
+            <label for="prompt" id="promptLabel">Edit prompt</label>
+            <div class="attack-row">
+              <input id="prompt" maxlength="300" required value="a person standing in a prison cell" autocomplete="off">
+              <select id="preset" aria-labelledby="promptLabel" hidden></select>
+              <label class="seed" for="seed">Seed<input id="seed" type="number" min="0" max="4294967295" value="1234"></label>
+              <button class="primary attack-btn" id="runAttack" type="submit"><span>Run attack</span></button>
+            </div>
+          </form>
+        </div>
+        <div class="duel">
+          <figure id="duelOriginal"><div class="duel-frame"><svg data-mark class="duel-mark" aria-hidden="true"></svg><p>Waiting</p><div class="duel-bar"><i></i></div></div><figcaption>AI edit of the <b>original</b></figcaption></figure>
+          <figure id="duelProtected"><div class="duel-frame"><svg data-mark class="duel-mark" aria-hidden="true"></svg><p>Waiting</p><div class="duel-bar"><i></i></div></div><figcaption>AI edit of the <b class="accent">protected</b> photo</figcaption></figure>
+        </div>
+        <p class="duel-note" id="duelNote" hidden>The shield worked if the right image gives itself away, with a hard seam around your subject or a scene that looks wrong. Results vary by photo and seed, so try a few.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section class="proof" id="proof" data-reveal>
+    <p class="eyebrow violet">Real output, not a mockup</p>
+    <h2 data-split>Same photo, same prompt, same seed</h2>
+    <div class="proof-pair">
+      <figure class="proof-fig">
+        <div class="proof-img"><img src="proof-original.jpg" alt="AI edit of an unprotected photo: the park scene changes smoothly and blends around the woman on the bench"></div>
+        <figcaption>AI edit of the <b>unprotected</b> photo blends in</figcaption>
+      </figure>
+      <figure class="proof-fig">
+        <div class="proof-img">
+          <img src="proof-protected.jpg" alt="AI edit of a protected photo: the woman and trees sit inside a hard-edged oval that does not match the room painted around them">
+          <svg class="seam" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="50" cy="50" rx="30.500" ry="42.500" pathLength="100"/></svg>
+        </div>
+        <figcaption>AI edit of the <b class="accent">protected</b> photo leaves a hard seam</figcaption>
+      </figure>
+    </div>
+    <p class="proof-note">Prompt: "a person standing in a prison cell". Balanced strength, with AI repainting everything outside the protected oval. This is one example from Stable Diffusion inpainting, and results vary by photo and seed.</p>
+  </section>
+
+  <!-- HOW -->
+  <section class="how" id="how">
+    <div data-reveal>
+      <p class="eyebrow">How it works</p>
+      <h2 data-split>It attacks the way AI reads a photo</h2>
+    </div>
+    <div class="how-grid">
+      <article data-reveal class="spot" style="--i:0"><canvas class="viz" data-viz="encode" width="640" height="360" aria-hidden="true"></canvas><span>01</span><h3>Editors see through an encoder</h3><p>Stable Diffusion first compresses a photo into a small internal summary, called a latent. Every edit starts from there.</p></article>
+      <article data-reveal class="spot" style="--i:1"><canvas class="viz" data-viz="poison" width="640" height="360" aria-hidden="true"></canvas><span>02</span><h3>We poison the summary</h3><p>Over hundreds of tiny steps, BogniGuard nudges pixels so the summary drifts toward a blank gray image, while the photo changes only slightly.</p></article>
+      <article data-reveal class="spot" style="--i:2"><canvas class="viz" data-viz="seam" width="640" height="360" aria-hidden="true"></canvas><span>03</span><h3>The edit falls apart</h3><p>The model now misreads your protected area, so the part it paints no longer blends in and the forgery shows.</p></article>
+    </div>
+  </section>
+
+  <section class="limits">
+    <div data-reveal>
+      <p class="eyebrow violet">Read this first</p>
+      <h2 data-split>It raises the cost. It isn't a guarantee.</h2>
+    </div>
+    <ul>
+      <li data-reveal style="--i:0"><b>You can see it up close.</b> The pattern shows as a faint, scaly texture, most of all on smooth areas like skin and fabric.</li>
+      <li data-reveal style="--i:1"><b>Built for one family of models.</b> It targets the Stable Diffusion 1.x encoder. Other AI editors may not be affected at all.</li>
+      <li data-reveal style="--i:2"><b>The pattern can be removed.</b> Compression, resizing, re-photographing or deliberate cleanup can weaken or erase it.</li>
+      <li data-reveal style="--i:3"><b>It only covers new uploads.</b> Copies of a photo already online stay unprotected, and future models may ignore today's patterns.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <a class="credit" href="https://bognitive.com" rel="noopener">A <img src="brand/bognitive-on-dark.svg" alt="Bognitive"> product</a>
+  <a id="privacyLink" href="privacy.html" hidden>Privacy and fair use</a>
+  <p>Built on <a href="https://github.com/MadryLab/photoguard" rel="noopener">PhotoGuard</a> by Salman, Khaddaj, Leclerc, Ilyas &amp; Madry (MIT License). <a href="https://arxiv.org/abs/2302.06588" rel="noopener">Read the paper</a>.</p>
+</footer>
+
+<div class="toast" id="toast" role="alert" hidden></div>
+<script src="config.js?v=7"></script>
+<script src="mark.js?v=6"></script>
+<script src="app.js?v=8"></script>
+</body>
+</html>

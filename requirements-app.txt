@@ -1,0 +1,12 @@
+torch>=2.3
+torchvision
+diffusers>=0.30
+transformers>=4.44
+accelerate
+safetensors
+huggingface_hub
+fastapi
+uvicorn
+python-multipart
+pillow
+numpy
