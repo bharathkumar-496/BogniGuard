@@ -86,9 +86,13 @@ footer p { max-width: 62ch; }
 @media (max-width: 860px) {
   /* Phones: the stage holds the top half and the text scrolls beneath it, never over it. */
   body { font-size: 17px; }
-  #stage { height: 50vh; z-index: 2; background: var(--ink); box-shadow: 0 1px 0 var(--hairline); }
+  #stage { height: 50vh; z-index: 2; background: var(--ink); }
+  /* Text dissolves as it scrolls up toward the stage. */
+  body::after { content: ""; position: fixed; z-index: 2; top: calc(50vh - 1px); left: 0; right: 0; height: 96px; pointer-events: none;
+    background: linear-gradient(to bottom, var(--ink) 0%, rgba(6, 7, 10, .86) 28%, rgba(6, 7, 10, .5) 58%, rgba(6, 7, 10, .14) 84%, transparent 100%); }
+  .no3d body::after { display: none; }
   header { padding-top: 14px; padding-bottom: 14px; }
-  .act { display: block; min-height: 100vh; padding: calc(50vh + 24px) var(--gutter) 40px; }
+  .act { display: block; min-height: 100vh; padding: calc(50vh + 72px) var(--gutter) 40px; }
   .copy, .hero .copy, .peak .copy, .close .copy, .limits .wide { width: 100%; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
   .tall, .peak { min-height: 130vh; }
   .tall .copy, .peak .copy { position: static; }
