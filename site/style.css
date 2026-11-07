@@ -84,16 +84,23 @@ footer p { max-width: 62ch; }
 .no3d .copy { margin: 0 auto; }
 
 @media (max-width: 860px) {
+  /* Phones: the stage holds the top half and the text scrolls beneath it, never over it. */
   body { font-size: 17px; }
-  .act { align-items: flex-end; padding: 72px var(--gutter) 34px; }
-  .copy { width: 100%; padding: 16px 18px; border-radius: 16px; background: rgba(6, 7, 10, .84); }
-  .hero .copy { padding: 0; background: none; }
-  .tall { min-height: 150vh; }
-  .tall .copy { top: auto; bottom: 16px; align-self: flex-end; }
-  .peak .copy, .limits .wide { padding: 16px 18px; }
-  .close .copy, .limits .wide { background: rgba(6, 7, 10, .92); }
-  h1 { font-size: clamp(38px, 11vw, 52px); }
+  #stage { height: 50vh; z-index: 2; background: var(--ink); box-shadow: 0 1px 0 var(--hairline); }
+  header { padding-top: 14px; padding-bottom: 14px; }
+  .act { display: block; min-height: 100vh; padding: calc(50vh + 24px) var(--gutter) 40px; }
+  .copy, .hero .copy, .peak .copy, .close .copy, .limits .wide { width: 100%; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+  .tall, .peak { min-height: 130vh; }
+  .tall .copy, .peak .copy { position: static; }
+  .close { min-height: 100vh; }
+  h1 { font-size: clamp(34px, 9.6vw, 48px); }
+  h2 { font-size: clamp(28px, 8vw, 40px); }
+  .lede { margin-top: 14px; font-size: 17px; }
+  .cta { margin-top: 18px; }
+  pre { font-size: 12.5px; }
+  footer { position: relative; }
 }
+.no3d .act { display: flex; padding-top: 96px; }
 @media (prefers-reduced-motion: reduce) {
   .copy { transition: none; transform: none; opacity: 1; }
   .cta { transition: none; }

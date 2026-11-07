@@ -196,7 +196,8 @@ async function start() {
 
   let width, height;
   function resize() {
-    width = innerWidth; height = innerHeight;
+    // The canvas sizes itself in CSS: full screen on desktop, the top half on phones.
+    width = canvas.clientWidth; height = canvas.clientHeight;
     const dpr = Math.min(devicePixelRatio || 1, small() ? 1.5 : 2);
     renderer.setPixelRatio(dpr);
     renderer.setSize(width, height, false);
@@ -219,8 +220,8 @@ async function start() {
     KEYS.forEach((k) => { current[k] = lerp(current[k], target[k], follow); });
 
     const portrait = small();
-    const scale = portrait ? Math.min(.8, width / height * 1.16) : 1;
-    specimen.position.set(portrait ? 0 : current.x * Math.max(1, camera.aspect) * .92, portrait ? .68 + current.y * .12 : current.y * .5, 0);
+    const scale = portrait ? Math.min(.88, width / height * .9) : 1;
+    specimen.position.set(portrait ? 0 : current.x * Math.max(1, camera.aspect) * .92, portrait ? -.17 : current.y * .5, 0);
     specimen.scale.setScalar((portrait ? 1 : current.zoom) * scale);
     pointer.sx = lerp(pointer.sx, pointer.x, .06);
     pointer.sy = lerp(pointer.sy, pointer.y, .06);
