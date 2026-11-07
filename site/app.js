@@ -38,13 +38,23 @@ const STATES = {
 };
 const KEYS = Object.keys(STATES.hero);
 const acts = [...document.querySelectorAll("[data-state]")];
+const panel = document.querySelector("main");
+
+document.querySelector(".brand").addEventListener("click", (e) => {
+  e.preventDefault();
+  panel.scrollTo({ top: 0 });
+  scrollTo({ top: 0 });
+});
 
 /** Blend between acts, holding each one around its centre so its state reads clearly. */
 function stateAt() {
-  const mid = scrollY + innerHeight / 2;
+  // On phones the text scrolls in its own panel, so measure against that panel.
+  const pane = small() ? panel.getBoundingClientRect() : { top: 0, height: innerHeight };
+  const mid = pane.top + pane.height / 2;
+  const span = pane.height * 1.2;
   const anchors = acts.map((el) => {
     const r = el.getBoundingClientRect();
-    return { y: scrollY + r.top + Math.min(r.height, innerHeight * 1.2) / 2 + Math.max(0, r.height - innerHeight * 1.2) * .5, s: STATES[el.dataset.state] };
+    return { y: r.top + Math.min(r.height, span) / 2 + Math.max(0, r.height - span) * .5, s: STATES[el.dataset.state] };
   });
   let i = 0;
   while (i < anchors.length - 2 && mid > anchors[i + 1].y) i++;
@@ -242,8 +252,10 @@ async function start() {
     seamMaterial.opacity = current.seam;
     seam.visible = current.seam > .01;
 
-    const max = document.documentElement.scrollHeight - innerHeight;
-    bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    const inner = portrait;
+    const max = inner ? panel.scrollHeight - panel.clientHeight : document.documentElement.scrollHeight - innerHeight;
+    const at = inner ? panel.scrollTop : scrollY;
+    bar.style.transform = `scaleX(${max > 0 ? at / max : 0})`;
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }

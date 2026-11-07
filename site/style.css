@@ -83,20 +83,23 @@ footer p { max-width: 62ch; }
 .no3d .act { flex-direction: column; justify-content: center; gap: 22px; }
 .no3d .copy { margin: 0 auto; }
 
+@supports (height: 1svh) { @media (max-width: 860px) { body { --split: 48svh !important; } } }
 @media (max-width: 860px) {
-  /* Phones: the stage holds the top half and the text scrolls beneath it, never over it. */
-  body { font-size: 17px; }
-  #stage { height: 50vh; z-index: 2; background: var(--ink); }
-  /* Text dissolves as it scrolls up toward the stage. */
-  body::after { content: ""; position: fixed; z-index: 2; top: calc(50vh - 1px); left: 0; right: 0; height: 96px; pointer-events: none;
-    background: linear-gradient(to bottom, var(--ink) 0%, rgba(6, 7, 10, .86) 28%, rgba(6, 7, 10, .5) 58%, rgba(6, 7, 10, .14) 84%, transparent 100%); }
-  .no3d body::after { display: none; }
+  /* Phones: the stage holds the top half. The text has its own scrolling panel in the
+     bottom half, so it stops at the middle of the screen and fades at the panel's edge. */
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body { --split: 48vh; font-size: 17px; }
+  #stage { height: var(--split); z-index: 2; background: var(--ink); }
   header { padding-top: 14px; padding-bottom: 14px; }
-  .act { display: block; min-height: 100vh; padding: calc(50vh + 72px) var(--gutter) 40px; }
+  main { position: fixed; top: var(--split); left: 0; right: 0; bottom: 0; z-index: 1; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 56px); mask-image: linear-gradient(to bottom, transparent 0, #000 56px); }
+  .no3d main { position: relative; top: 0; height: 100%; -webkit-mask-image: none; mask-image: none; }
+  .no3d #stage { display: none; }
+  .act { display: block; min-height: 54vh; padding: 56px var(--gutter) 36px; }
   .copy, .hero .copy, .peak .copy, .close .copy, .limits .wide { width: 100%; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
-  .tall, .peak { min-height: 130vh; }
+  .tall { min-height: 78vh; }
+  .peak { min-height: 96vh; }
   .tall .copy, .peak .copy { position: static; }
-  .close { min-height: 100vh; }
+  .close { min-height: 54vh; }
   h1 { font-size: clamp(34px, 9.6vw, 48px); }
   h2 { font-size: clamp(28px, 8vw, 40px); }
   .lede { margin-top: 14px; font-size: 17px; }
