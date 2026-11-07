@@ -33,7 +33,7 @@ header a { pointer-events: auto; }
 .source:hover { box-shadow: inset 0 0 0 1px var(--electric); }
 
 main { position: relative; z-index: 1; }
-.act { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; padding: 96px var(--gutter); }
+.act { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 96px var(--gutter); }
 .tall { min-height: 150vh; }
 .left .copy, .hero .copy { margin-right: auto; }
 .right .copy { margin-left: auto; }
