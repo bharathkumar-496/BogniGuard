@@ -311,8 +311,8 @@ html.js .proof.seen .proof-img, html.js .proof.done .proof-img { clip-path: circ
 .limits b { display: block; color: #fff; font-weight: 600; }
 
 footer { max-width: 1312px; margin: auto; padding: 24px var(--gutter) 40px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
-.credit { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; color: var(--muted); }
-.credit img { height: 22px; width: auto; }
+.credit { display: inline-block; line-height: 22px; text-decoration: none; white-space: nowrap; color: var(--muted); }
+.credit img { display: inline-block; height: 22px; width: auto; margin: 0 5px; vertical-align: -6.50px; } /* letters sit on the text baseline */
 .toast { position: fixed; z-index: 25; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: min(92vw, 520px); padding: 12px 18px; border-radius: 12px; background: var(--violet); color: var(--ink); font-weight: 600; }
 
 @media (max-width: 900px) {

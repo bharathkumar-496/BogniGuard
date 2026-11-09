@@ -74,8 +74,8 @@ pre { margin: 20px 0 22px; padding: 16px 18px; border-radius: 14px; background: 
 
 footer { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 24px var(--gutter) 36px; border-top: 1px solid var(--hairline); background: var(--ink); font-size: 14px; color: var(--muted); }
 footer p { max-width: 62ch; }
-.credit { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
-.credit img { display: block; width: auto; }
+.credit { display: inline-block; line-height: 22px; text-decoration: none; white-space: nowrap; }
+.credit img { display: inline-block; height: 22px; width: auto; margin: 0 5px; vertical-align: -6.50px; } /* letters sit on the text baseline */
 
 .fallback { display: none; }
 .no3d #stage { display: none; }
